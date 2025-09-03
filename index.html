@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gratitude Jar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff8e1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fff8e1, #ffe0b2, #ffe082);
+      transition: background 0.5s ease;
+    }
+
+    .app-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff9800;
+      margin-bottom: 20px;
+    }
+
+    .input-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ffcc80;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e68900;
+    }
+
+    .gratitude-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .gratitude-item {
+      background-color: #fff3e0;
+      border-left: 5px solid #ff9800;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .gratitude-item .delete {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      color: #ff5722;
+      cursor: pointer;
+    }
+
+    .no-items {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1><i class="fas fa-heart"></i> Gratitude Jar</h1>
+    <div class="input-section">
+      <input type="text" id="gratitudeInput" placeholder="What are you grateful for today?" />
+      <button onclick="addGratitude()"><i class="fas fa-plus"></i></button>
+    </div>
+    <ul id="gratitudeList" class="gratitude-list"></ul>
+    <div id="noItemsMessage" class="no-items">Your gratitude jar is empty.</div>
+  </div>
+
+  <script>
+    const input = document.getElementById('gratitudeInput');
+    const list = document.getElementById('gratitudeList');
+    const noItemsMessage = document.getElementById('noItemsMessage');
+
+    function getGratitudeItems() {
+      return JSON.parse(localStorage.getItem('gratitudeItems') || '[]');
+    }
+
+    function saveGratitudeItems(items) {
+      localStorage.setItem('gratitudeItems', JSON.stringify(items));
+    }
+
+    function renderGratitudeList() {
+      const items = getGratitudeItems();
+      list.innerHTML = '';
+
+      if (items.length === 0) {
+        noItemsMessage.style.display = 'block';
+      } else {
+        noItemsMessage.style.display = 'none';
+      }
+
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'gratitude-item';
+        li.innerHTML = `
+          ${item}
+          <span class="delete" onclick="deleteGratitude(${index})"><i class="fas fa-trash"></i></span>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function addGratitude() {
+      const value = input.value.trim();
+      if (!value) return;
+
+      const items = getGratitudeItems();
+      items.unshift(value);
+      saveGratitudeItems(items);
+
+      input.value = '';
+      renderGratitudeList();
+    }
+
+    function deleteGratitude(index) {
+      const items = getGratitudeItems();
+      items.splice(index, 1);
+      saveGratitudeItems(items);
+      renderGratitudeList();
+    }
+
+    // Initial render
+    renderGratitudeList();
+  </script>
+</body>
+</html>
